@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy:dev": "ng build --prod && firebase deploy --only hosting:dev"
   },
   "private": true,
   "dependencies": {
@@ -14,6 +15,7 @@
     "@angular/common": "~13.0.0",
     "@angular/compiler": "~13.0.0",
     "@angular/core": "~13.0.0",
+    "@angular/fire": "^7.4.1",
     "@angular/forms": "~13.0.0",
     "@angular/platform-browser": "~13.0.0",
     "@angular/platform-browser-dynamic": "~13.0.0",
@@ -24,7 +26,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.0.3",
-    "@angular/cli": "~13.0.3",
+    "@angular/cli": "^14.2.3",
     "@angular/compiler-cli": "~13.0.0",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
