@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "noemin-firebase-test": {
+      "hosting": {
+        "firebase-test": [
+          "noemin-firebase-test"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "noemin-firebase-test"
+  }
+}

@@ -1,0 +1,21 @@
+<div *ngIf="auth.user | async as user; else showLogin">
+  user => {{user | json}}
+  <h1>Hello {{ user.displayName }}!</h1>
+  <button (click)="logout()">Logout</button>
+</div>
+<ng-template #showLogin>
+  <p>Please login.</p>
+
+  <button (click)="loginGoogle()">Login with Google</button> <br><br>
+  <button (click)="loginFackbook()">Login with Facebook</button> <br><br>
+
+  <input type="text" placeholder="Email" #email>
+  <input type="password" placeholder="密碼" #password>
+  <button (click)="loginPassword(email.value, password.value)">Login with Email & Password</button> <br><br>
+
+  <input placeholder="EX：0922333222" maxLength="10" #phone>
+  <!-- <button (click)="getOtp(phone.value)">發送驗證碼→</button> -->
+  <button (click)="loginPhone(phone.value)">發送驗證碼→</button>
+
+
+</ng-template>
