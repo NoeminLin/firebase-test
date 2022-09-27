@@ -98,11 +98,16 @@ export class AuthService {
   }
 
 
-  loginPassword(email: string, password: string): Promise<any> {
-    return this.afAuth.signInWithEmailAndPassword(email, password);
+  createEmail(email: string, password: string): Promise<any>{
+    return this.afAuth.createUserWithEmailAndPassword(email,password).then(result => {
+      console.log('facebook login success:', result);
+      return this.updateUserData(result.user);
+    });
   }
 
-
+  loginEmail(email: string, password: string): Promise<any> {
+    return this.afAuth.signInWithEmailAndPassword(email, password);
+  }
 
 
 

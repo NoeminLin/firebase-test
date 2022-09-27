@@ -1,5 +1,5 @@
 <div *ngIf="auth.user | async as user; else showLogin">
-  user => {{user | json}}
+  <!-- user => {{user | json}} -->
   <h1>Hello {{ user.displayName }}!</h1>
   <button (click)="logout()">Logout</button>
 </div>
@@ -8,14 +8,26 @@
 
   <button (click)="loginGoogle()">Login with Google</button> <br><br>
   <button (click)="loginFackbook()">Login with Facebook</button> <br><br>
+  <hr>
+  <input type="email" placeholder="Email" #email>
+  <input type="password" placeholder="密碼" #password><br><br>
+  <button (click)="createEmail(email.value, password.value)">Sign up with Email & Password</button> <br><br>
+  <button (click)="loginEmail(email.value, password.value)">Login with Email & Password</button> <br><br>
+  <hr>
+  <input type="tel" placeholder="EX：0922333222" maxLength="10" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" #phone><br>
+  <button (click)="loginPhone(phone.value)"
+    [disabled]="!canCodeSend">{{ codeSent ? '再次發送驗證碼(' + coldDownTime + 's)' : '發送手機驗證碼' }}</button><br><br>
 
-  <input type="text" placeholder="Email" #email>
-  <input type="password" placeholder="密碼" #password>
-  <button (click)="loginPassword(email.value, password.value)">Login with Email & Password</button> <br><br>
+  <input type="text" placeholder="驗證碼" #code><br>
+  <button (click)="sendVerifiedCode(code.value)">傳送驗證碼</button>
 
-  <input placeholder="EX：0922333222" maxLength="10" #phone>
-  <!-- <button (click)="getOtp(phone.value)">發送驗證碼→</button> -->
-  <button (click)="loginPhone(phone.value)">發送驗證碼→</button>
+  <p>{{errorMessage}}</p>
 
-
+  <!-- 使用google機器人需要註明 -->
+  <div class="google-policy">
+    This site is protected by reCAPTCHA and the Google
+    <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+    <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+  </div>
+  <div id="recaptcha-container"></div>
 </ng-template>

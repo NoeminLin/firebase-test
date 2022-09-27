@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
@@ -9,18 +9,18 @@ import { AuthService, DatabasePath } from '../shared/services/auth.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss']
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent implements OnInit, AfterViewInit {
   email: string;
   password: string;
   errorMessage: string;
   phone: string;
 
   // 手機驗證
-  recaptchaVerifier: firebase.auth.RecaptchaVerifier;
+  appVerifier: firebase.auth.RecaptchaVerifier;
   confirmationResult: firebase.auth.ConfirmationResult;
-  coldDownTime = 30;
-  verify: string;
   codeSent = false;
+  canCodeSend = true;
+  coldDownTime = 30;
 
   constructor(
     public auth: AngularFireAuth,
@@ -29,19 +29,24 @@ export class AuthComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log('ngOnInit');
     this.authService.user$.subscribe(async (user) => {
       try {
         if (user) {
           const userDoc = await this.afs.doc(`${DatabasePath.Users}/${user.uid}`).ref.get();
-          console.log('userDoc =>', userDoc);
+          console.log('userDoc =>', userDoc.data());
         }
       } catch (e) {
         this.authService.logout();
       }
     });
 
-    this.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+  }
 
+  ngAfterViewInit() {
+    console.log('ngAfterViewInit');
+
+    this.appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
   }
 
   loginGoogle() {
@@ -93,8 +98,15 @@ export class AuthComponent implements OnInit {
     });
   }
 
-  loginPassword(email: string, password: string) {
-    this.authService.loginPassword(email, password).then(result => {
+  createEmail(email: string, password: string) {
+    this.authService.createEmail(email, password).catch(err => {
+      console.log('login error: ' + err);
+      this.errorMessage = err;
+    });
+  }
+
+  loginEmail(email: string, password: string) {
+    this.authService.loginEmail(email, password).then(result => {
       // sucess
     }).catch(err => {
       console.log('login error: ' + err);
@@ -122,31 +134,52 @@ export class AuthComponent implements OnInit {
   }
 
 
+  // 先寫在component裡面，再搬到service
 
-  loginPhone(phone) {
+  loginPhone(phone: string) {
     if (/^09\d{8}$/.test(phone) !== true) {
       alert('請確認手機格式');
       return;
     }
-    if (!confirm(`是否驗證 ${phone} 此手機號碼？`)) {
-      return null;
-    }
     const phoneNumber = '+886' + phone.substring(1);
-    firebase
-      .auth()
-      .signInWithPhoneNumber(phoneNumber, this.recaptchaVerifier)
-      .then((confirmationResult) => {
-        // this.verify = confirmationResult.verificationId;
-        // console.log('發送成功 result =>' + confirmationResult)
-        // this.otpIsCorrect = false;
+    console.log('phoneNumber =>', phoneNumber);
+    firebase.auth().signInWithPhoneNumber(phoneNumber, this.appVerifier)
+      .then(confirmationResult => {
         this.codeSent = true;
         this.confirmationResult = confirmationResult;
+        console.log('this.confirmationResult =>', this.confirmationResult)
         alert('簡訊驗證碼已發送，請查看簡訊並輸入驗證碼');
-        this.recaptchaVerifier.clear();
-      }).catch((error) => {
-        alert(error.message);
+        this.appVerifier.clear();
+        console.log('signInWithPhoneNumber sucess:')
+      }).catch(err => {
+        this.codeSent = false;
+        this.canCodeSend = true;
+        console.error(err);
+        alert('簡訊驗證碼發送失敗，請重試。');
       });
+
   }
+
+
+
+  async sendVerifiedCode(code) {
+    try {
+      console.log('this.confirmationResult', this.confirmationResult);
+      // const confirmationResult = await this.confirmationResult.confirm(code);
+      // console.log('confirmationResult', confirmationResult);
+      // if (!confirmationResult) {
+      //   console.log('驗證失敗')
+      // }
+    } catch (e) {
+      console.log('e', e)
+    }
+
+    // if (!confirmationResult) {
+    //   alert('驗證碼錯誤，請重新輸入');
+    //   return false;
+    // }
+  }
+
 
 
 

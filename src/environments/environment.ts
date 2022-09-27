@@ -11,7 +11,7 @@ export const environment = {
     authDomain: 'noemin-firebase-test.firebaseapp.com',
     messagingSenderId: '341927662412',
   },
-  production: false
+  production: true
 };
 
 /*

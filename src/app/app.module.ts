@@ -24,7 +24,7 @@ import { SETTINGS as AUTH_SETTINGS } from '@angular/fire/compat/auth';
     AngularFireModule.initializeApp(environment.firebase),
   ],
   providers: [
-    { provide: AUTH_SETTINGS, useValue: { appVerificationDisabledForTesting: true } },
+    // { provide: AUTH_SETTINGS, useValue: { appVerificationDisabledForTesting: false } },
     // { provide: USE_DEVICE_LANGUAGE, useValue: true },
     // { provide: LANGUAGE_CODE, useValue: 'fr' },
     // { provide: TENANT_ID, useValue: 'tenant-id-app-one' },
